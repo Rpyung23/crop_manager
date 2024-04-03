@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getEmailTemplate = void 0;
 const getEmailTemplate = (token, usuario, id) => {
-    const url = 'https://' + window.location.hostname + '/showRestaurar';
+    const url = 'https://https://cropmanager-production.up.railway.app/showRestaurar';
     return `
     <form>
       <div>

@@ -1,5 +1,5 @@
 export const getEmailTemplate = (token: string, usuario: string, id: string) => {
-    const url = 'https://' +window.location.hostname +'/showRestaurar';
+    const url = 'https://https://cropmanager-production.up.railway.app/showRestaurar';
     return `
     <form>
       <div>
