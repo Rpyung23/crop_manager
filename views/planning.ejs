@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="../assets/"
+    data-template="vertical-menu-template-free">
+
+<head>
+    <%- include('includes/header') %>
+</head>
+
+<body>
+    <!-- Layout -->
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+
+            <!-- Menu -->
+            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                <div class="app-brand demo">
+                    <a href="/inicio" class="app-brand-link">
+                        <span class="app-brand-logo demo">
+                            <svg width="40" viewBox="0 0 25 25" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <path id="Nature"
+                                    d="M24.76,4.12C18.34.3,11.9,0,6.13,3.19,2.83,5,.51,8,.08,11.08a7.06,7.06,0,0,0,1.44,5.4A19.32,19.32,0,0,1,9.4,8.61a.5.5,0,1,1,.49.87c-6.53,3.64-8.66,9.11-9.87,14a.49.49,0,0,0,.1.3c.19.24.52.19,1.13.2H2.33c1.09,0,1.1-.07,1.17-.42a20.69,20.69,0,0,1,1.4-4.38c4.86,2.14,11.53-1,14.32-4.36A14.47,14.47,0,0,0,21.67,10C22.35,8.14,23,6.34,24.8,5a.5.5,0,0,0,0-.83Z"
+                                    fill="#696cff"></path>
+                            </svg>
+                        </span>
+                        <span class="app-brand-text demo menu-text fw-bolder ms-2">CropManager</span>
+                    </a>
+
+                    <a href="" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+                    </a>
+                </div>
+
+                <div class="menu-inner-shadow"></div>
+
+                <ul class="menu-inner py-1">
+
+                    <!-- Dashboard -->
+                    <li class="menu-item">
+                        <a href="/inicio" class="menu-link">
+                            <i class="menu-icon tf-icons bx bxs-dashboard"></i>
+                            <div data-i18n="Analytics">Panel de control</div>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="/calendario" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-calendar"></i>
+                            <div data-i18n="Basic">Calendario</div>
+                        </a>
+                    </li>
+
+                    <!-- Reportes -->
+                    <% if (usuario.rol_usuario==1) {%>
+                        <li class="menu-item">
+                            <a href="#" class="menu-link menu-toggle">
+                                <i class="menu-icon tf-icons bx bxs-report"></i>
+                                <div data-i18n="Basic">Reportes</div>
+                            </a>
+    
+                            <ul class="menu-sub">
+                                <li class="menu-item">
+                                    <a href="/reportes/produccion" class="menu-link">
+                                        <div data-i18n="Without navbar">Producción por cultivo</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="/reportes/uso" class="menu-link">
+                                        <div data-i18n="Container">Uso de los campos</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <% } %>
+                        
+                    <!-- Campos -->
+                    <li class="menu-header small text-uppercase"><span class="menu-header-text">Campos</span></li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-layout"></i>
+                            <div data-i18n="Basic">Campos</div>
+                        </a>
+
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/trazado" class="menu-link">
+                                    <div data-i18n="Without navbar">Trazado</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="/campos/list" class="menu-link">
+                                    <div data-i18n="Container">Lista de campos</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Planificación -->
+                    <li class="menu-item active open">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon tf-icons bx bx-notepad"></i>
+                            <div data-i18n="Basic">Planificación</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="/rotacion" class="menu-link">
+                                    <div data-i18n="Container">Rotación de cultivos</div>
+                                </a>
+                            </li>
+                            <li class="menu-item active">
+                                <a href="/actividades/0" class="menu-link">
+                                    <div data-i18n="Container">Actividades</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <% if (usuario.rol_usuario==1) {%>
+                        <li class="menu-item">
+                            <a href="/estados" class="menu-link">
+                                <i class="menu-icon tf-icons bx bx-collection"></i>
+                                <div data-i18n="Basic">Estados</div>
+                            </a>
+                        </li>
+                        <% } %>
+                            <li class="menu-item">
+                                <a href="/registros" class="menu-link">
+                                    <i class="menu-icon tf-icons bx bxs-layout"></i>
+                                    <div data-i18n="Analytics">Cosechas</div>
+                                </a>
+                            </li>
+
+                            <!-- Cultivos -->
+                            <% if (usuario.rol_usuario==1) {%>
+                                <li class="menu-header small text-uppercase"><span
+                                        class="menu-header-text">Cultivos</span>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="/familias" class="menu-link">
+                                        <i class="menu-icon tf-icons bx bx-category"></i>
+                                        <div data-i18n="Basic">Familias</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="/cultivos" class="menu-link">
+                                        <i class="menu-icon tf-icons bx bx-spa"></i>
+                                        <div data-i18n="Basic">Cultivos</div>
+                                    </a>
+                                </li>
+                                <% } %>
+
+                                    <!-- Usuarios -->
+                                    <% if (usuario.rol_usuario==1) {%>
+                                        <li class="menu-header small text-uppercase">
+                                            <span class="menu-header-text">Usuarios</span>
+                                        </li>
+                                        <% } else {%>
+                                            <li class="menu-header small text-uppercase">
+                                                <span class="menu-header-text">Usuario</span>
+                                            </li>
+                                            <% } %>
+                                                <li class="menu-item">
+                                                    <a href="/perfil" class="menu-link">
+                                                        <i class="menu-icon tf-icons bx bxs-user-account"></i>
+                                                        <div data-i18n="Analytics">Mi perfil</div>
+                                                    </a>
+                                                </li>
+                                                <% if (usuario.rol_usuario==1) {%>
+                                                    <li class="menu-item">
+                                                        <a href="/usuarios" class="menu-link">
+                                                            <i class="menu-icon tf-icons bx bx-group"></i>
+                                                            <div data-i18n="Analytics">Usuarios</div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="menu-item">
+                                                        <a href="/roles" class="menu-link">
+                                                            <i class="menu-icon tf-icons bx bx-detail"></i>
+                                                            <div data-i18n="Analytics">Roles</div>
+                                                        </a>
+                                                    </li>
+
+                                                    <!-- Configuracion -->
+                                                    <li class="menu-header small text-uppercase">
+                                                        <span class="menu-header-text">Configuración</span>
+                                                    </li>
+                                                    <li class="menu-item">
+                                                        <a href="/configuracion" class="menu-link">
+                                                            <i class="menu-icon tf-icons bx bx-cog"></i>
+                                                            <div data-i18n="Analytics">Configuraciones</div>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+                                                        <li class="menu-item">
+                                                            <a href="/logout" class="menu-link">
+                                                                <i class="menu-icon tf-icons bx bx-log-out"></i>
+                                                                <div data-i18n="Analytics">Cerrar sesión</div>
+                                                            </a>
+                                                        </li>
+                </ul>
+            </aside>
+            <!-- / Menu -->
+
+            <!-- Layout container -->
+            <div class="layout-page">
+
+                <!-- Navbar -->
+                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+                    id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                        <!-- Buscar -->
+                        <div class="navbar-nav align-items-center">
+                            <div class="nav-item d-flex align-items-center">
+                                <i class="bx bx-search fs-4 lh-0"></i>
+                                <input type="text" class="form-control border-0 shadow-none" placeholder="Buscar..."
+                                    aria-label="Search..." />
+                            </div>
+                        </div>
+                        <!-- /Buscar -->
+
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+                            <!-- Place this tag where you want the button to render. -->
+                            <li class="nav-item lh-1 me-3">
+                                <span class="badge bg-label-secondary"><i class="menu-icon tf-icons bx bx-calendar"></i>
+                                    <%= date %>
+                                </span>
+                            </li>
+
+                            <!-- User -->
+                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
+                                    data-bs-toggle="dropdown">
+                                    <div class="avatar avatar-online">
+                                        <img src="/assets/img/avatars/Usuario.jpg" alt
+                                            class="w-px-40 h-auto rounded-circle" />
+                                    </div>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="#">
+                                            <div class="d-flex">
+                                                <div class="flex-shrink-0 me-3">
+                                                    <div class="avatar avatar-online">
+                                                        <img src="/assets/img/avatars/Usuario.jpg" alt
+                                                            class="w-px-40 h-auto rounded-circle" />
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <span class="fw-semibold d-block">
+                                                        <%= usuario.nombre %>
+                                                    </span>
+                                                    <small class="text-muted">
+                                                        <%= rol %>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/perfil">
+                                            <i class="bx bxs-user-account me-2"></i>
+                                            <span class="align-middle">Mi perfil</span>
+                                        </a>
+                                    </li>
+                                    <% if (usuario.rol_usuario == 1) {%>
+                                        <li>
+                                            <a class="dropdown-item" href="/configuracion">
+                                                <i class="bx bx-cog me-2"></i>
+                                                <span class="align-middle">Configuraciones</span>
+                                            </a>
+                                        </li>
+                                        <% } %>
+                                    <li>
+                                        <div class="dropdown-divider"></div>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="/logout">
+                                            <i class="bx bx-power-off me-2"></i>
+                                            <span class="align-middle">Cerrar sesión</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--/ User -->
+                        </ul>
+                    </div>
+                </nav>
+                <!-- / Navbar -->
+
+                <!-- Contenido de Planificación -->
+                <div class="content-wrapper">
+                    <div class="container-xxl flex-grow-1 container-p-y">
+
+                        <div class="col-lg-4 col-md-6">
+                            <div class="mt-0">
+                                <!-- Nueva actividad -->
+                                <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="modalCenterTitle">Nueva actividad</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="formAuthentication" class="mb-3" action="/actividades/add"
+                                                    method="POST">
+                                                    <div class="mb-3">
+                                                        <label for="nameBasic" class="form-label">Campo</label>
+                                                        <input type="text" id="campo" class="form-control"
+                                                            placeholder="Campo" readonly required />
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <input type="hidden" id="id_campo" class="form-control"
+                                                            name="id_campo" required />
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Seleccione la actividad</label>
+                                                        <select class="form-select" id="selectedActividad"
+                                                            aria-label="Seleccionar la actividad" name="actividad"
+                                                            required>
+                                                            <% if (estados.length> 0) {%>
+                                                                <% for (var i=0; i < estados.length; i++) { %>
+                                                                    <option value="<%= estados[i].id%>">
+                                                                        <%= estados[i].actividad %>
+                                                                    </option>
+                                                                    <% } %>
+                                                                        <% } else {%>
+                                                                            <option value="0">
+                                                                                No hay actividades
+                                                                            </option>
+                                                                            <% } %>
+                                                        </select>
+                                                    </div>
+                                                    <div class="row g-2">
+                                                        <div class="col mb-2">
+                                                            <label for="html5-date-input" class="form-label">Fecha de
+                                                                inicio</label>
+                                                            <div class="col-md-10" style="width: 100%">
+                                                                <input min="<%= date %>" value="<%= date %>"
+                                                                    class="form-control" name="fecha_inicio"
+                                                                    style="width: 100%;" type="date" required />
+                                                            </div>
+                                                        </div>
+                                                        <div class="col mb-2">
+                                                            <label for="html5-date-input" class="form-label">Fecha de
+                                                                finalización</label>
+                                                            <div class="col-md-10" style="width: 100%">
+                                                                <input min="<%= date %>" value="<%= date %>"
+                                                                    class="form-control" name="fecha_fin"
+                                                                    style="width: 100%;" type="date" required />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-1">
+                                                        <input id="contenido" type="hidden" class="form-control"
+                                                            name="contenido" value="<%= activo %>"
+                                                            placeholder="Contenido de la actividad" />
+                                                    </div>
+                                                    <% if (error) {%>
+                                                        <p class="mb-n2" style="color:#ff5c5c">
+                                                            <%= error %>
+                                                        </p>
+                                                        <% } %>
+                                                            <div class="modal-footer my-1">
+                                                                <button type="button" class="btn btn-outline-secondary"
+                                                                    data-bs-dismiss="modal">
+                                                                    Cerrar
+                                                                </button>
+                                                                <button id="btnGuardar" type="submit"
+                                                                    class="btn btn-primary" disabled>
+                                                                    <span class="tf-icons bx bx-save"></span>
+                                                                    Guardar</button>
+                                                            </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Planificación de actividades</h5>
+                                </div>
+                                <div class="card-body">
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label">Campo</label>
+                                            <select class="form-select" id="selectedCampo"
+                                                aria-label="Seleccionar el campo" onchange="setCampo(this.value, true)">
+                                                <% if (_campo) {%>
+                                                <option value="<%= _campo.id %>" selected>
+                                                    <%= _campo.nombre %>
+                                                </option>
+                                                <% } %>
+                                                <% if (campos.length >= 0) {%>
+                                                    <% for (var i=0; i < campos.length; i++) { %>
+                                                        <option value="<%= campos[i].id %>">
+                                                            <%= campos[i].nombre %>
+                                                        </option>
+                                                        <% } %>
+                                                            <% } else {%>
+                                                                <option value="0">
+                                                                    No hay campos
+                                                                </option>
+                                                                <% } %>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 pt-2 my-1"
+                                            style="text-align: center; align-self:flex-end;">
+                                            <button id="btn" type="button" class="btn btn-outline-primary"
+                                                data-bs-toggle="modal" data-bs-target="#modalCenter" disabled> <span
+                                                    class="tf-icons bx bx-plus-circle"></span>
+                                                Nueva actividad
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 pt-2">
+                                <div class="card">
+                                    <div class="table-responsive text-nowrap">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Actividad</th>
+                                                    <th>Fecha de inicio</th>
+                                                    <th>Fecha de finalización</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="table-border-bottom-0">
+                                                <% if (actividades) {%>
+                                                    <% for (var i=0; i < actividades.length; i++) { %>
+                                                        <tr>
+                                                            <td><i class="fab fa-angular fa-lg text-danger"></i>
+                                                                <strong class="px-1">
+                                                                    <%= actividades[i].actividad %>
+                                                                </strong>
+                                                            </td>
+                                                            <td>
+                                                                <%= actividades[i].fecha_inicio %>
+                                                            </td>
+                                                            <td>
+                                                                <%= actividades[i].fecha_fin %>
+                                                            </td>
+                                                            <% if (actividades[i].activo==1) {%>
+                                                                <td>
+                                                                    <span class="badge bg-label-success">En
+                                                                        proceso</span>
+                                                                </td>
+                                                                <%} else if (actividades[i].activo==2) {%>
+                                                                    <td>
+                                                                        <span
+                                                                            class="badge bg-label-danger">Finalizada</span>
+                                                                    </td>
+                                                                    <% } else {%>
+                                                                        <td>
+                                                                            <span
+                                                                                class="badge bg-label-secondary">Planificada</span>
+                                                                        </td>
+                                                                        <% } %>
+                                                                            <% if (actividades[i].id !=0) {%>
+                                                                                <td>
+                                                                                    <% if (date < actividades[i].fecha_inicio) {%>
+                                                                                        <a class="btn btn-outline-primary"
+                                                                                            href="/actividades/search/<%= actividades[i].id %>"
+                                                                                            title="Editar actividad"><i
+                                                                                                class="bx bx-edit-alt"></i></a>
+                                                                                    <% } %>
+                                                                                    <% if (actividades[i].activo!=2) {%>
+                                                                                        <a class="btn btn-outline-secondary"
+                                                                                            onclick="confirmar(<%= actividades[i].id %>)"
+                                                                                            onmouseenter="entra(<%= actividades[i].id %>)"
+                                                                                            onmouseleave="sale(<%= actividades[i].id %>)"
+                                                                                            title="Finalizar actividad"
+                                                                                            id="btnFinish<%= actividades[i].id %>">Finalizar</a>
+                                                                                    <% } else {%>
+                                                                                        <a class="btn btn-outline-danger"
+                                                                                            onclick="confirmarEliminacion(<%= actividades[i].id %>)"
+                                                                                            onmouseenter="entra2(<%= actividades[i].id %>)"
+                                                                                            onmouseleave="sale2(<%= actividades[i].id %>)"
+                                                                                            title="Eliminar"><i id="btnDelete<%= actividades[i].id %>"
+                                                                                            class="bx bx-trash idred"></i></a>
+                                                                                    <% } %>
+                                                                                </td>
+                                                                                <% } else {%>
+                                                                                    <td>
+                                                                                        <a class="btn btn-outline-primary"
+                                                                                            href="/trazado"
+                                                                                            title="Ver detalle"><i
+                                                                                                class="bx bx-show"></i></a>
+                                                                                    </td>
+                                                                                    <% } %>
+                                                        </tr>
+                                                        <% } %>
+                                                            <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- / Contenido -->
+
+                    <!-- Footer -->
+                    <%- include('includes/footer') %>
+                        <!-- / Footer -->
+
+                        <div class="content-backdrop fade"></div>
+                </div>
+                <!-- Content wrapper -->
+            </div>
+            <!-- / Layout page -->
+        </div>
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendor/libs/popper/popper.js"></script>
+    <script src="/assets/vendor/js/bootstrap.js"></script>
+    <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script src="/assets/vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="/assets/vendor/libs/apex-charts/apexcharts.js"></script>
+
+    <!-- Main JS -->
+    <script src="/assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="/assets/js/dashboards-analytics.js"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        function confirmar(id) {
+            Swal.fire({
+                title: '¿Desea dar por finalizada esta actividad?',
+                icon: 'warning',
+                backdrop: false,
+                showCancelButton: true,
+                confirmButtonText: 'Finalizar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location = '/actividades/finish/' + id;
+                }
+            })
+        }
+
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: '¿Desea eliminar esta actividad?',
+                text: 'El registro se eliminará permanentemente',
+                icon: 'warning',
+                backdrop: false,
+                showCancelButton: true,
+                confirmButtonText: 'Eliminar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location = '/actividades/delete/' + id;
+                }
+            })
+        }
+
+        function entra(id) {
+            document.getElementById("btnFinish" + id).style.color = 'white';
+        }
+
+        function sale(id) {
+            document.getElementById("btnFinish" + id).style.color = '#7885a1';
+        }
+
+        function entra2(id) {
+            document.getElementById("btnDelete" + id).style.color = 'white';
+        }
+
+        function sale2(id) {
+            document.getElementById("btnDelete" + id).style.color = '#ff3e1d';
+        }
+
+        function setCampo(campo, activar) {
+            let _campo = document.getElementById("campo");
+            let id_campo = document.getElementById("id_campo");
+            let combo = document.getElementById("selectedCampo");
+            _campo.value = combo.options[combo.selectedIndex].text;
+            id_campo.value = campo;
+            if (activar) {
+                window.location = '/actividades/' + campo;
+            }
+        }
+
+        (function () {
+            let selectedCampo = document.getElementById("selectedCampo").value;
+            if (selectedCampo == 0) {
+                document.getElementById('btn').disabled = true;
+            } else {
+                document.getElementById('btn').disabled = false;
+            }
+            setCampo(selectedCampo, false);
+
+            let selectedActividad = document.getElementById("selectedActividad").value;
+            if (selectedActividad != 0) {
+                document.getElementById('btnGuardar').disabled = false;
+            }
+
+            let contenido = document.getElementById("contenido").value;
+            if (contenido == 'true') {
+                document.getElementById('btn').click();
+            }
+        })();
+    </script>
+    <style>
+        .idred {
+            color: #FF3E1D;
+        }
+    </style>
+</body>
+
+</html>
