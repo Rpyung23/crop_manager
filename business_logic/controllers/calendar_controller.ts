@@ -5,6 +5,11 @@ import { getNombre } from "../../data_access/roles_dta";
 import { getSiembras, getSiembrasPorUsuario } from "../../data_access/siembras_dta";
 import { getCampos, getNombreCampo } from "../../data_access/campos_dta";
 import { getNombreCultivo } from "../../data_access/cultivos_dta";
+declare module 'express-session' {
+  export interface SessionData {
+    user: any;
+  }
+}
 
 export const showCalendar = async (req: Request, res: Response) => {
     if (req.session.user) {
