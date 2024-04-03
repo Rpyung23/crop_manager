@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getEmailTemplate = void 0;
 const getEmailTemplate = (token, usuario, id) => {
-    const url = 'http://localhost:8000/showRestaurar';
+    const url = 'http://'+ window.location.hostname +':8000/showRestaurar';
     return `
     <form>
       <div>

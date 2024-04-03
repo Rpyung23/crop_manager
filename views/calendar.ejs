@@ -346,7 +346,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             $.ajax({
-                url: 'http://localhost:8000/dataCalendar',
+                url: 'http://'+ window.location.hostname +':8000/dataCalendar',
                 method: 'GET',
                 dataType: 'json',
                 success: function (response) {
