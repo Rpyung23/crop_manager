@@ -13,7 +13,7 @@ export class Server{
 
     constructor(){
         this.app = express();
-        this.port = '8000' // process.env.PORT ?? ;
+        this.port = process.env.PORT ?? '8000';
         this.dbConnect();
         this.settings();
         this.middlewares();

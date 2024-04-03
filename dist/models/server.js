@@ -20,11 +20,12 @@ const cors_1 = __importDefault(require("cors"));
 const connect_1 = __importDefault(require("../database/connect"));
 class Server {
     constructor() {
+        var _a;
         this.apiRoutes = {
             route: '/',
         };
         this.app = (0, express_1.default)();
-        this.port = '8000'; // process.env.PORT ?? ;
+        this.port = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : '8000';
         this.dbConnect();
         this.settings();
         this.middlewares();
