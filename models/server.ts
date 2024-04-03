@@ -37,7 +37,8 @@ export class Server{
         this.app.use(session({
             secret: 'secret',
             resave: false,
-            saveUninitialized: true
+            saveUninitialized: true,
+            proxy: true 
         }));
     }
     routes(){

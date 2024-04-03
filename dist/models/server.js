@@ -47,7 +47,8 @@ class Server {
         this.app.use((0, express_session_1.default)({
             secret: 'secret',
             resave: false,
-            saveUninitialized: true
+            saveUninitialized: true,
+            proxy: true
         }));
     }
     routes() {
