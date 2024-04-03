@@ -348,7 +348,7 @@
         document.addEventListener('DOMContentLoaded', function () 
         {
             $.ajax({
-                url: 'https://'+ window.location.hostname +':8000/dataCalendar',
+                url: 'https://'+ window.location.hostname +'/dataCalendar',
                 method: 'GET',
                 dataType: 'json',
                 success: function (response) {
@@ -368,8 +368,8 @@
                     calendar.render();
                 },
                 error: function (xhr, status, error) {
-                    // Ocurrió un error al hacer la solicitud
-                    console.error(error);
+                    console.log("Ocurrió un error al hacer la solicitud")
+                    console.error(errors);
                 }
             });
         });
