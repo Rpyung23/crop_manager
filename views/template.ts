@@ -1,5 +1,5 @@
 export const getEmailTemplate = (token: string, usuario: string, id: string) => {
-    const url = 'https://' +window.location.hostname +':8000/showRestaurar';
+    const url = 'https://' +window.location.hostname +'/showRestaurar';
     return `
     <form>
       <div>
