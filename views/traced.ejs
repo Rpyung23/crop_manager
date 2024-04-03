@@ -72,6 +72,346 @@
 </style>
 
 <body>
+
+    <script>
+        function readAllCamposApi() {
+            $.ajax({
+                url: '/campos',
+                method: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    // Respuesta exitosa de la API
+                    if (response.length > 0) {
+                        for (let i = 0; i < response.length; i++) {
+                            let list = response[i].coordenadas.split(';')
+                            let listaPol = []
+                            for (let j = 0; j < list.length; j++) {
+                                let list2 = list[j].split(',')
+                                let obj = { lat: parseFloat(list2[0]), lng: parseFloat(list2[1]) }
+                                listaPol.push(obj)
+                            }
+
+                            if (listaPol.length > 0) {
+                                const newPolygon = new google.maps.Polygon({
+                                    paths: listaPol,
+                                    strokeOpacity: 0.8,
+                                    strokeWeight: 3,
+                                    fillColor: response[i].color,
+                                    fillOpacity: 0.4,
+                                    id: response[i].id,
+                                    estado: response[i].estado,
+                                    nombre: response[i].nombre,
+                                    area: response[i].area,
+                                    nombreEstado: response[i].nombreEstado,
+                                    campoSembrado: response[i].campoSembrado
+                                });
+
+                                newPolygon.setMap(oMapaGoogle);
+                                newPolygon.addListener("click", function () {
+                                    showOptions(newPolygon);
+                                });
+                            }
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Ocurrió un error al hacer la solicitud
+                    console.error(error);
+                }
+            });
+        }
+
+        function showOptions(campo) {
+            if (oPolygon != null) {
+                closeEditForma();
+            }
+            let contenedor = document.getElementById("containerOptions");
+            const idCampo = document.getElementById("idCampo");
+            idCampo.title = campo.id;
+            const nombreCampo = document.getElementById("nombreCampo");
+            nombreCampo.textContent = campo.nombre;
+            const areaCampo = document.getElementById("areaCampo");
+            areaCampo.textContent = campo.area + " m²";
+            const estadoCampo = document.getElementById("estadoCampo");
+            estadoCampo.textContent = campo.nombreEstado;
+            showSiembra(campo.id);
+            contenedor.classList.remove('hideContainer');
+            if (campo.estado != campo.campoSembrado) {
+                document.getElementById('editForma').disabled = false;
+                document.getElementById('editDatos').disabled = false;
+            } else {
+                document.getElementById('editForma').disabled = true;
+                document.getElementById('editDatos').disabled = true;
+            }
+            closeSiembra();
+            showActividad();
+            oPolygon = campo;
+        }
+
+        function closeOptions() {
+            let contenedor = document.getElementById("containerOptions");
+            contenedor.classList.add('hideContainer');
+        }
+
+        function newSiembra() {
+            let contenedor = document.getElementById('containerCultivoAdd');
+            contenedor.classList.remove('hideContainer');
+            let contenedor2 = document.getElementById('containerPrediccion');
+            contenedor2.classList.remove('hideContainer');
+            closeOptions();
+            doPrediccion();
+        }
+
+        function closeSiembra() {
+            let contenedor = document.getElementById('containerCultivoAdd');
+            contenedor.classList.add('hideContainer');
+            let contenedor2 = document.getElementById('containerPrediccion');
+            contenedor2.classList.add('hideContainer');
+        }
+
+        function showSiembra(id) {
+            $.ajax({
+                url: '/siembras/' + id,
+                method: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    // Respuesta exitosa de la API
+                    const cultivo = document.getElementById("cultivo");
+                    const fecha_siembra = document.getElementById("fecha_siembra");
+                    const stock_estimado = document.getElementById("stock_estimado");
+                    const fecha_cosecha_est = document.getElementById("fecha_cosecha_est");
+                    const produccion = document.getElementById("produccionObtenida");
+                    const siembra = document.getElementById("idSiembra");
+                    const idsiembra = document.getElementById("identificadorSiembra");
+                    if (response != null) {
+                        siembra.title = response.id;
+                        idsiembra.value = response.id;
+                        cultivo.textContent = response.cultivo;
+                        fecha_siembra.textContent = response.fecha_siembra;
+                        stock_estimado.textContent = response.produccion_estimada + ' Kg';
+                        fecha_cosecha_est.textContent = response.fecha_cosecha_est;
+                        produccion.value = response.produccion_estimada;
+                        let contenedor = document.getElementById("contenedorSiembra");
+                        contenedor.classList.remove('hideContainer');
+                        contenedor = document.getElementById("contenedorSembrar");
+                        contenedor.classList.add('hideContainer');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Ocurrió un error al hacer la solicitud
+                    let contenedor = document.getElementById("contenedorSiembra");
+                    contenedor.classList.add('hideContainer');
+                    contenedor = document.getElementById("contenedorSembrar");
+                    contenedor.classList.remove('hideContainer');
+                }
+            });
+        }
+
+        function saveSiembra() {
+            let txtCultivo = document.getElementById("selectedCultivo");
+            let txtFecha = document.getElementById("fechaSiembra");
+            let idCampo = document.getElementById("idCampo");
+
+            let objSiembra = {
+                id_campo: idCampo.title,
+                id_cultivo: txtCultivo.value,
+                fecha_siembra: txtFecha.value
+            }
+
+            $.ajax({
+                url: '/siembras/add',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    id_campo: objSiembra.id_campo,
+                    id_cultivo: objSiembra.id_cultivo,
+                    fecha_siembra: objSiembra.fecha_siembra,
+                },
+                success: function (response) {
+                    // La respuesta exitosa de la API
+                    closeSiembra()
+                    oPolygon.setMap(null)
+                    readAllCamposApi()
+                },
+                error: function (xhr, status, error) {
+                    // Ocurrió un error al hacer la solicitud
+                    console.error(error);
+                }
+            });
+        }
+
+        function eliminarSiembra() {
+            const siembra = document.getElementById("idSiembra").title
+            Swal.fire({
+                title: '¿Desea cancelar la siembra de este campo?',
+                text: "La siembra se eliminará permanentemente",
+                icon: 'warning',
+                backdrop: false,
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location = '/siembras/delete/' + siembra;
+                }
+            })
+        }
+
+        function procesoCosecha() {
+            let contenedor = document.getElementById('containerCosechar');
+            contenedor.classList.remove('hideContainer');
+            closeOptions();
+        }
+
+        function closeCosecha() {
+            let contenedor = document.getElementById('containerCosechar');
+            contenedor.classList.add('hideContainer');
+        }
+
+        function doPrediccion() {
+            const id_cult = document.getElementById("selectedCultivo").value;
+            const id_camp = document.getElementById("idCampo").title;
+            $.ajax({
+                url: '/trazado/' + id_camp + '/' + id_cult,
+                method: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    // Respuesta exitosa de la API
+                    const cultivo = document.getElementById("nomcultivo")
+                    const prediccion_estimada = document.getElementById("prediccion_estimada")
+
+                    if (response != null) {
+                        cultivo.textContent = response.cultivo
+                        prediccion_estimada.textContent = response.produccion_estimada + ' Kg'
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Ocurrió un error al hacer la solicitud
+                    console.error(error);
+                }
+            });
+        }
+
+        function locateEdit() {
+            const id_campo = document.getElementById("idCampo").title;
+            window.location = "/campos/" + id_campo;
+        }
+
+        function locateActividad() {
+            const id_campo = document.getElementById("idCampo").title;
+            window.location = "/actividades/" + id_campo;
+        }
+
+        function showActividad() {
+            const id_campo = document.getElementById("idCampo").title;
+            $.ajax({
+                url: '/getActividad/' + id_campo,
+                method: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    // Respuesta exitosa de la API
+                    let contenedorA = document.getElementById("contenedorActividad");
+                    let contenedorAA = document.getElementById("contenedorActividadActual");
+                    const actividad = document.getElementById("actividad");
+                    const fecha_inicio = document.getElementById("fecha_inicio");
+                    const fecha_fin = document.getElementById("fecha_fin");
+                    if (response.actividad != undefined) {
+                        actividad.textContent = response.actividad;
+                        fecha_inicio.textContent = response.fecha_inicio;
+                        fecha_fin.textContent = response.fecha_fin;
+                        contenedorAA.classList.remove('hideContainer');
+                        contenedorA.classList.add('hideContainer');
+                    } else {
+                        contenedorAA.classList.add('hideContainer');
+                        contenedorA.classList.remove('hideContainer');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Ocurrió un error al hacer la solicitud
+                    contenedorAA.classList.add('hideContainer');
+                    contenedorA.classList.remove('hideContainer');
+                    console.error(error);
+                }
+            });
+        }
+
+        function setCenterPosition(campo) {
+            $.ajax({
+                url: '/rotacion/getCampo/' + campo,
+                method: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    // Respuesta exitosa de la API
+                    if (response != null) {
+                        const coordenadas = response.coordenadas.split(";");
+                        const lat_lng = coordenadas[0].split(',');
+                        const center = { lat: parseFloat(lat_lng[0]), lng: parseFloat(lat_lng[1]) };
+                        oMapaGoogle.setCenter(center);
+                        oMapaGoogle.zoom = 17;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Ocurrió un error al hacer la solicitud
+                    console.error(error);
+                }
+            });
+        }
+
+        function editForma() {
+            closeOptions();
+            oPolygon.setEditable(true);
+            let contenedor = document.getElementById("containerEditForma");
+            contenedor.classList.remove('hideContainer');
+        }
+
+        function closeEditForma() {
+            let contenedor = document.getElementById("containerEditForma");
+            contenedor.classList.add('hideContainer');
+            oPolygon.setEditable(false);
+        }
+
+        function saveForma() {
+            const id_campo = document.getElementById("idCampo").title;
+            let paths = oPolygon.getPath().getArray();
+            oPolygon.setEditable(false);
+            let stringCoordenadas = "";
+
+            for (var i = 0; i < paths.length; i++) {
+                if (paths.length - 1 === i) {
+                    stringCoordenadas = stringCoordenadas + paths[i].lat() + "," + paths[i].lng();
+                } else {
+                    stringCoordenadas = stringCoordenadas + paths[i].lat() + "," + paths[i].lng() + ";";
+                }
+            }
+
+            $.ajax({
+                url: '/campos/editForma/' + id_campo,
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    // Aquí puedes pasar los datos que deseas enviar en el cuerpo de la solicitud
+                    coordenadas: stringCoordenadas
+                },
+                success: function (response) {
+                    // La respuesta exitosa de la API
+                    closeEditForma();
+                    readAllCamposApi()
+                },
+                error: function (xhr, status, error) {
+                    // Ocurrió un error al hacer la solicitud
+                    console.error(error);
+                }
+            });
+        }
+
+        function entra(){
+            document.getElementById("btnDelete").style.color = 'white';
+        }
+
+        function sale(){
+            document.getElementById("btnDelete").style.color = '#ff3e1d';
+        }
+    </script>
+    
     <script>
         let oMapaGoogle;
         let oDrawingManager;
@@ -886,344 +1226,7 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
-    <script>
-        function readAllCamposApi() {
-            $.ajax({
-                url: '/campos',
-                method: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    // Respuesta exitosa de la API
-                    if (response.length > 0) {
-                        for (let i = 0; i < response.length; i++) {
-                            let list = response[i].coordenadas.split(';')
-                            let listaPol = []
-                            for (let j = 0; j < list.length; j++) {
-                                let list2 = list[j].split(',')
-                                let obj = { lat: parseFloat(list2[0]), lng: parseFloat(list2[1]) }
-                                listaPol.push(obj)
-                            }
 
-                            if (listaPol.length > 0) {
-                                const newPolygon = new google.maps.Polygon({
-                                    paths: listaPol,
-                                    strokeOpacity: 0.8,
-                                    strokeWeight: 3,
-                                    fillColor: response[i].color,
-                                    fillOpacity: 0.4,
-                                    id: response[i].id,
-                                    estado: response[i].estado,
-                                    nombre: response[i].nombre,
-                                    area: response[i].area,
-                                    nombreEstado: response[i].nombreEstado,
-                                    campoSembrado: response[i].campoSembrado
-                                });
-
-                                newPolygon.setMap(oMapaGoogle);
-                                newPolygon.addListener("click", function () {
-                                    showOptions(newPolygon);
-                                });
-                            }
-                        }
-                    }
-                },
-                error: function (xhr, status, error) {
-                    // Ocurrió un error al hacer la solicitud
-                    console.error(error);
-                }
-            });
-        }
-
-        function showOptions(campo) {
-            if (oPolygon != null) {
-                closeEditForma();
-            }
-            let contenedor = document.getElementById("containerOptions");
-            const idCampo = document.getElementById("idCampo");
-            idCampo.title = campo.id;
-            const nombreCampo = document.getElementById("nombreCampo");
-            nombreCampo.textContent = campo.nombre;
-            const areaCampo = document.getElementById("areaCampo");
-            areaCampo.textContent = campo.area + " m²";
-            const estadoCampo = document.getElementById("estadoCampo");
-            estadoCampo.textContent = campo.nombreEstado;
-            showSiembra(campo.id);
-            contenedor.classList.remove('hideContainer');
-            if (campo.estado != campo.campoSembrado) {
-                document.getElementById('editForma').disabled = false;
-                document.getElementById('editDatos').disabled = false;
-            } else {
-                document.getElementById('editForma').disabled = true;
-                document.getElementById('editDatos').disabled = true;
-            }
-            closeSiembra();
-            showActividad();
-            oPolygon = campo;
-        }
-
-        function closeOptions() {
-            let contenedor = document.getElementById("containerOptions");
-            contenedor.classList.add('hideContainer');
-        }
-
-        function newSiembra() {
-            let contenedor = document.getElementById('containerCultivoAdd');
-            contenedor.classList.remove('hideContainer');
-            let contenedor2 = document.getElementById('containerPrediccion');
-            contenedor2.classList.remove('hideContainer');
-            closeOptions();
-            doPrediccion();
-        }
-
-        function closeSiembra() {
-            let contenedor = document.getElementById('containerCultivoAdd');
-            contenedor.classList.add('hideContainer');
-            let contenedor2 = document.getElementById('containerPrediccion');
-            contenedor2.classList.add('hideContainer');
-        }
-
-        function showSiembra(id) {
-            $.ajax({
-                url: '/siembras/' + id,
-                method: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    // Respuesta exitosa de la API
-                    const cultivo = document.getElementById("cultivo");
-                    const fecha_siembra = document.getElementById("fecha_siembra");
-                    const stock_estimado = document.getElementById("stock_estimado");
-                    const fecha_cosecha_est = document.getElementById("fecha_cosecha_est");
-                    const produccion = document.getElementById("produccionObtenida");
-                    const siembra = document.getElementById("idSiembra");
-                    const idsiembra = document.getElementById("identificadorSiembra");
-                    if (response != null) {
-                        siembra.title = response.id;
-                        idsiembra.value = response.id;
-                        cultivo.textContent = response.cultivo;
-                        fecha_siembra.textContent = response.fecha_siembra;
-                        stock_estimado.textContent = response.produccion_estimada + ' Kg';
-                        fecha_cosecha_est.textContent = response.fecha_cosecha_est;
-                        produccion.value = response.produccion_estimada;
-                        let contenedor = document.getElementById("contenedorSiembra");
-                        contenedor.classList.remove('hideContainer');
-                        contenedor = document.getElementById("contenedorSembrar");
-                        contenedor.classList.add('hideContainer');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    // Ocurrió un error al hacer la solicitud
-                    let contenedor = document.getElementById("contenedorSiembra");
-                    contenedor.classList.add('hideContainer');
-                    contenedor = document.getElementById("contenedorSembrar");
-                    contenedor.classList.remove('hideContainer');
-                }
-            });
-        }
-
-        function saveSiembra() {
-            let txtCultivo = document.getElementById("selectedCultivo");
-            let txtFecha = document.getElementById("fechaSiembra");
-            let idCampo = document.getElementById("idCampo");
-
-            let objSiembra = {
-                id_campo: idCampo.title,
-                id_cultivo: txtCultivo.value,
-                fecha_siembra: txtFecha.value
-            }
-
-            $.ajax({
-                url: '/siembras/add',
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    id_campo: objSiembra.id_campo,
-                    id_cultivo: objSiembra.id_cultivo,
-                    fecha_siembra: objSiembra.fecha_siembra,
-                },
-                success: function (response) {
-                    // La respuesta exitosa de la API
-                    closeSiembra()
-                    oPolygon.setMap(null)
-                    readAllCamposApi()
-                },
-                error: function (xhr, status, error) {
-                    // Ocurrió un error al hacer la solicitud
-                    console.error(error);
-                }
-            });
-        }
-
-        function eliminarSiembra() {
-            const siembra = document.getElementById("idSiembra").title
-            Swal.fire({
-                title: '¿Desea cancelar la siembra de este campo?',
-                text: "La siembra se eliminará permanentemente",
-                icon: 'warning',
-                backdrop: false,
-                showCancelButton: true,
-                confirmButtonText: 'Aceptar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location = '/siembras/delete/' + siembra;
-                }
-            })
-        }
-
-        function procesoCosecha() {
-            let contenedor = document.getElementById('containerCosechar');
-            contenedor.classList.remove('hideContainer');
-            closeOptions();
-        }
-
-        function closeCosecha() {
-            let contenedor = document.getElementById('containerCosechar');
-            contenedor.classList.add('hideContainer');
-        }
-
-        function doPrediccion() {
-            const id_cult = document.getElementById("selectedCultivo").value;
-            const id_camp = document.getElementById("idCampo").title;
-            $.ajax({
-                url: '/trazado/' + id_camp + '/' + id_cult,
-                method: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    // Respuesta exitosa de la API
-                    const cultivo = document.getElementById("nomcultivo")
-                    const prediccion_estimada = document.getElementById("prediccion_estimada")
-
-                    if (response != null) {
-                        cultivo.textContent = response.cultivo
-                        prediccion_estimada.textContent = response.produccion_estimada + ' Kg'
-                    }
-                },
-                error: function (xhr, status, error) {
-                    // Ocurrió un error al hacer la solicitud
-                    console.error(error);
-                }
-            });
-        }
-
-        function locateEdit() {
-            const id_campo = document.getElementById("idCampo").title;
-            window.location = "/campos/" + id_campo;
-        }
-
-        function locateActividad() {
-            const id_campo = document.getElementById("idCampo").title;
-            window.location = "/actividades/" + id_campo;
-        }
-
-        function showActividad() {
-            const id_campo = document.getElementById("idCampo").title;
-            $.ajax({
-                url: '/getActividad/' + id_campo,
-                method: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    // Respuesta exitosa de la API
-                    let contenedorA = document.getElementById("contenedorActividad");
-                    let contenedorAA = document.getElementById("contenedorActividadActual");
-                    const actividad = document.getElementById("actividad");
-                    const fecha_inicio = document.getElementById("fecha_inicio");
-                    const fecha_fin = document.getElementById("fecha_fin");
-                    if (response.actividad != undefined) {
-                        actividad.textContent = response.actividad;
-                        fecha_inicio.textContent = response.fecha_inicio;
-                        fecha_fin.textContent = response.fecha_fin;
-                        contenedorAA.classList.remove('hideContainer');
-                        contenedorA.classList.add('hideContainer');
-                    } else {
-                        contenedorAA.classList.add('hideContainer');
-                        contenedorA.classList.remove('hideContainer');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    // Ocurrió un error al hacer la solicitud
-                    contenedorAA.classList.add('hideContainer');
-                    contenedorA.classList.remove('hideContainer');
-                    console.error(error);
-                }
-            });
-        }
-
-        function setCenterPosition(campo) {
-            $.ajax({
-                url: '/rotacion/getCampo/' + campo,
-                method: 'GET',
-                dataType: 'json',
-                success: function (response) {
-                    // Respuesta exitosa de la API
-                    if (response != null) {
-                        const coordenadas = response.coordenadas.split(";");
-                        const lat_lng = coordenadas[0].split(',');
-                        const center = { lat: parseFloat(lat_lng[0]), lng: parseFloat(lat_lng[1]) };
-                        oMapaGoogle.setCenter(center);
-                        oMapaGoogle.zoom = 17;
-                    }
-                },
-                error: function (xhr, status, error) {
-                    // Ocurrió un error al hacer la solicitud
-                    console.error(error);
-                }
-            });
-        }
-
-        function editForma() {
-            closeOptions();
-            oPolygon.setEditable(true);
-            let contenedor = document.getElementById("containerEditForma");
-            contenedor.classList.remove('hideContainer');
-        }
-
-        function closeEditForma() {
-            let contenedor = document.getElementById("containerEditForma");
-            contenedor.classList.add('hideContainer');
-            oPolygon.setEditable(false);
-        }
-
-        function saveForma() {
-            const id_campo = document.getElementById("idCampo").title;
-            let paths = oPolygon.getPath().getArray();
-            oPolygon.setEditable(false);
-            let stringCoordenadas = "";
-
-            for (var i = 0; i < paths.length; i++) {
-                if (paths.length - 1 === i) {
-                    stringCoordenadas = stringCoordenadas + paths[i].lat() + "," + paths[i].lng();
-                } else {
-                    stringCoordenadas = stringCoordenadas + paths[i].lat() + "," + paths[i].lng() + ";";
-                }
-            }
-
-            $.ajax({
-                url: '/campos/editForma/' + id_campo,
-                method: 'POST',
-                dataType: 'json',
-                data: {
-                    // Aquí puedes pasar los datos que deseas enviar en el cuerpo de la solicitud
-                    coordenadas: stringCoordenadas
-                },
-                success: function (response) {
-                    // La respuesta exitosa de la API
-                    closeEditForma();
-                    readAllCamposApi()
-                },
-                error: function (xhr, status, error) {
-                    // Ocurrió un error al hacer la solicitud
-                    console.error(error);
-                }
-            });
-        }
-
-        function entra(){
-            document.getElementById("btnDelete").style.color = 'white';
-        }
-
-        function sale(){
-            document.getElementById("btnDelete").style.color = '#ff3e1d';
-        }
-    </script>
 </body>
 
 </html>
