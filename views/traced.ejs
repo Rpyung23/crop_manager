@@ -44,6 +44,7 @@
     <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxHLrR15oQTeiQFRndW9Y6YacYsVFHcR0&libraries=drawing&callback=initMap">
         </script>
+    <script src="/assets/vendor/libs/jquery/jquery.js"></script>    
 
     <style>
         #map {
@@ -73,7 +74,13 @@
 
 <body>
 
+
     <script>
+        let oMapaGoogle;
+        let oDrawingManager;
+        let mListaCampo = [];
+        let oPolygon = null;
+
         function readAllCamposApi() {
             $.ajax({
                 url: '/campos',
@@ -410,13 +417,6 @@
         function sale(){
             document.getElementById("btnDelete").style.color = '#ff3e1d';
         }
-    </script>
-    
-    <script>
-        let oMapaGoogle;
-        let oDrawingManager;
-        let mListaCampo = [];
-        let oPolygon = null;
 
         async function initMap() {
             //@ts-ignore
@@ -1205,7 +1205,7 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-    <script src="/assets/vendor/libs/jquery/jquery.js"></script>
+    
     <script src="/assets/vendor/libs/popper/popper.js"></script>
     <script src="/assets/vendor/js/bootstrap.js"></script>
     <script src="/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
